@@ -15,5 +15,3 @@ in addition the customers will be able to check on their status and estimated wa
 >1. [Mongoose](http://mongoosejs.com/) - mongodb object modeling
 >2. [body-parser](https://www.npmjs.com/package/body-parser) - http request body parser. 
 
-## API EndPoints
-
