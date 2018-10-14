@@ -13,8 +13,8 @@ mongoose.connect('mongodb://beacondb:beacondb@nodecluster-shard-00-00-ldy3x.mong
     useNewUrlParser:true
 });
 
-const accountSid = 'AC524398ea103ad3ea5638e9b1b9052d1c';
-const authToken = '9ad5a3cae6884a052855dcece4e7f3a1';
+const accountSid = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+const authToken = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 const client = require('twilio')(accountSid, authToken);
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 
