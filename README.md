@@ -10,8 +10,10 @@ in addition the customers will also be able to check their reservation status an
 * [Expressjs](http://expressjs.com/zh-tw/) - API Server
 * [Nodejs](https://nodejs.org/en/) - Backend Framework
 * [NPM](https://www.npmjs.com/) - Package Management
+* [Twilio](https://www.twilio.com/) - SMS 
 
 ## Packages ##
 >1. [Mongoose](http://mongoosejs.com/) - mongodb object modeling
->2. [body-parser](https://www.npmjs.com/package/body-parser) - http request body parser. 
+>2. [body-parser](https://www.npmjs.com/package/body-parser) - http request body parser.
+>3. [twilio](https://www.npmjs.com/package/twilio-api) - communication with customer using SMS
 
