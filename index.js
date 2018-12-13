@@ -6,6 +6,8 @@ var bodyParser = require('body-parser')
 
 var Schema = mongoose.Schema;
 
+var newcustomer;
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 
@@ -67,6 +69,7 @@ app.post('/reservation',function(req,res){
             createdProduct:customer
         });
 
+        newcustomer = customer
         sendMessage(customer,req,res);
 
      }).catch(err => {
@@ -156,6 +159,14 @@ app.post('/sms', (req, res) => {
         res.end(twiml.toString());
         }
 
+        else if (result[0].waitingtime == 0)
+        {
+                twiml.message('Table is available');
+  
+                res.writeHead(200, {'Content-Type': 'text/xml'});
+                res.end(twiml.toString());
+        }
+
        else if (result[0].waitingtime == null){
 
 
@@ -172,7 +183,7 @@ app.post('/sms', (req, res) => {
 
                 else {
 
-                twiml.message('Table is reserved for you. Please Checkin with in ' + gap + ' minutes');
+                twiml.message('Table is available');
   
                 res.writeHead(200, {'Content-Type': 'text/xml'});
                 res.end(twiml.toString());
@@ -245,6 +256,26 @@ function sendMessage(customer){
     }).sort({"size":1}).then(result =>
         {
             if (result.length > 0){
+
+                Reservation.find({'mobilenumber':mobile,'Status':{'$ne':'Finished'}}).then(result =>{
+                    if (result.length != 0 && result[0].checkintime != null)
+                    {
+                        var available = result[0].checkintime;
+                        var waiting =  Math.round(((available.getTime())/3600000)*60);
+
+                        if (waiting-1 <= 0)
+                        {
+                            client.messages
+                .create({
+                 body: 'Table is available',
+                 from: '+17046650085',
+                 to: mobile
+   })
+  .then(message => console.log(message.sid))
+  .done();
+                        }
+                    }
+                })
                 Reservation.updateOne(
                     {'mobilenumber':mobile,'Status':{'$ne':'Finished'}},
                     {$set:{Status:'Waiting for Checkin',Table:result[0].table}}
@@ -264,7 +295,7 @@ function sendMessage(customer){
 
                 client.messages
                 .create({
-                 body: 'Table is available, please check in with in 15 min',
+                 body: 'Table is available',
                  from: '+17046650085',
                  to: mobile
    })
@@ -606,6 +637,8 @@ function alertUser(tableNumber){
 
     Reservation.find({Table:tableNumber,'Status':{'$ne':'Finished'}}).sort({waitingtime:1}).then(result =>{
 
+        Reservation.updateOne({'Table':tableNumber,'Status':{'$ne':'Finished'}},{$set:{waitingtime:0}}).then(result1 => {})
+
         console.log(" check in is " + result);
 
         client.messages
@@ -635,6 +668,10 @@ function thanksUser(mobile){
     
 }
 app.listen(4000, () => {
+    if (newcustomer != undefined)
+    {
+    sendMessage(newcustomer);
+    }
     console.log("server is running at 4000");
 });
 
