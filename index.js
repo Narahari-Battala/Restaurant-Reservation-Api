@@ -137,6 +137,7 @@ app.post('/sms', (req, res) => {
 
     Reservation.find({"mobilenumber":phone,'Status':{'$ne':'Finished'}}).then(result =>{
 
+
         console.log(result);
 
        if (!(result.length > 0)){
@@ -145,6 +146,38 @@ app.post('/sms', (req, res) => {
   
         res.writeHead(200, {'Content-Type': 'text/xml'});
         res.end(twiml.toString());
+       }
+
+       else if (result[0].Status != 'Waiting for Checkin')
+        {
+            twiml.message('You have already checked in');
+  
+        res.writeHead(200, {'Content-Type': 'text/xml'});
+        res.end(twiml.toString());
+        }
+
+       else if (result[0].waitingtime == null){
+
+
+
+                var gap = 15 - Math.round(((new Date().getTime() - result[0].requestedtime.getTime())/3600000)*60);
+
+                if (gap< 0){
+
+                twiml.message('Table is reserved for you. You need to check in as soon as possible');
+  
+                res.writeHead(200, {'Content-Type': 'text/xml'});
+                res.end(twiml.toString());
+                }
+
+                else {
+
+                twiml.message('Table is reserved for you. Please Checkin with in ' + gap + ' minutes');
+  
+                res.writeHead(200, {'Content-Type': 'text/xml'});
+                res.end(twiml.toString());
+                }
+             
        }
 
        else {
